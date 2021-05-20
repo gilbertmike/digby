@@ -22,12 +22,6 @@ keyboard = KeyboardHandler()
 motors = MotorController(FL_PWM, FL_DIR, FR_PWM, FR_DIR, BL_PWM, BL_DIR,
                          BR_PWM, BR_DIR, reverse_bl=True)
 
-
-def telemetry_thread():
-    motor_tel = motors.get_telemetry()
-    emit('telemetry', motor_tel)
-
-
 @app.route('/')
 def sessions():
     return render_template('main.html')
@@ -36,6 +30,8 @@ def sessions():
 @socketio.on('connect')
 def socket_connect():
     print('Connection')
+    motor_tel = motors.get_telemetry()
+    emit('telemetry', motor_tel)
 
 
 @socketio.on('keyboard_update')
@@ -43,8 +39,10 @@ def socket_keypress(json):
     keyboard.update(json)
     v, angle = keyboard.get_velocity()
     motors.steer(angle, v)
+    
+    motor_tel = motors.get_telemetry()
+    emit('telemetry', motor_tel)
 
 
 if __name__ == '__main__':
-    socketio.start_background_task(telemetry_thread)
     socketio.run(app)
