@@ -1,22 +1,31 @@
-from gpiozero import DigitalOutputDevice
+from gpiozero import PWMOutputDevice
 
 
 class MotorController:
     def __init__(self, front_left_pwm, front_left_dir, front_right_pwm,
                  front_right_dir, back_left_pwm, back_left_dir, back_right_pwm,
-                 back_right_dir):
+                 back_right_dir, max_speed=0.5, reverse_fl=False, 
+                 reverse_bl=False, reverse_fr=False, reverse_br=False):
         # Motor pins
-        self.fl_pwm = DigitalOutputDevice(front_left_pwm, initial_value=False)
-        self.fl_dir = DigitalOutputDevice(front_left_dir, initial_value=False)
-        self.fr_pwm = DigitalOutputDevice(front_right_pwm, initial_value=False)
-        self.fr_dir = DigitalOutputDevice(front_right_dir, initial_value=False)
-        self.bl_pwm = DigitalOutputDevice(back_left_pwm, initial_value=False)
-        self.bl_dir = DigitalOutputDevice(back_left_dir, initial_value=False)
-        self.br_pwm = DigitalOutputDevice(back_right_pwm, initial_value=False)
-        self.br_dir = DigitalOutputDevice(back_right_dir, initial_value=False)
+        self.fl_pwm = PWMOutputDevice(front_left_pwm, initial_value=False)
+        self.fl_dir = PWMOutputDevice(front_left_dir, 
+                                      active_high=reverse_fl, 
+                                      initial_value=False)
+        self.fr_pwm = PWMOutputDevice(front_right_pwm, initial_value=False)
+        self.fr_dir = PWMOutputDevice(front_right_dir,
+                                      active_high=reverse_fr,
+                                      initial_value=False)
+        self.bl_pwm = PWMOutputDevice(back_left_pwm, initial_value=False)
+        self.bl_dir = PWMOutputDevice(back_left_dir,
+                                      active_high=reverse_bl,
+                                      initial_value=False)
+        self.br_pwm = PWMOutputDevice(back_right_pwm, initial_value=False)
+        self.br_dir = PWMOutputDevice(back_right_dir,
+                                      active_high=reverse_br,
+                                      initial_value=False)
 
         # Motor velocity
-        MAX_SPEED = 1
+        self.max_speed = max_speed
         self.vl = 0
         self.vr = 0
 
@@ -30,6 +39,7 @@ class MotorController:
         The value `vel` is the speed. Value is between -1 (negative Y)
         and 1 (positive Y).
         """
+        vel *= self.max_speed
         if angle > 0:
             self.vl = vel * (1-angle)
             self.vr = vel

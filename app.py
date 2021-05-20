@@ -20,7 +20,7 @@ socketio = SocketIO(app)
 
 keyboard = KeyboardHandler()
 motors = MotorController(FL_PWM, FL_DIR, FR_PWM, FR_DIR, BL_PWM, BL_DIR,
-                         BR_PWM, BR_DIR)
+                         BR_PWM, BR_DIR, reverse_bl=True)
 
 
 @app.route('/')
@@ -37,7 +37,6 @@ def socket_connect():
 def socket_keypress(json):
     keyboard.update(json)
     v, angle = keyboard.get_velocity()
-    print(v, angle)
     motors.steer(angle, v)
 
 
