@@ -3,15 +3,15 @@ from digby.keyboard import KeyboardHandler
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 
-FR_DIR = 14
-FR_PWM = 15
-BR_DIR = 18
-BR_PWM = 23
+FR_PWM = 14
+FR_DIR = 15
+BR_PWM = 18
+BR_DIR = 23
 
-FL_DIR = 2
-FL_PWM = 3
-BL_DIR = 4
-BL_PWM = 17
+FL_DIR = 4
+FL_PWM = 17
+BL_DIR = 27
+BL_PWM = 22
 
 
 app = Flask(__name__)
@@ -37,6 +37,7 @@ def socket_connect():
 def socket_keypress(json):
     keyboard.update(json)
     v, angle = keyboard.get_velocity()
+    print(v, angle)
     motors.steer(angle, v)
 
 
