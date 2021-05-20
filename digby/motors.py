@@ -1,28 +1,28 @@
-from gpiozero import PWMOutputDevice
+from gpiozero import OutputDevice, PWMOutputDevice
 
 
 class MotorController:
     def __init__(self, front_left_pwm, front_left_dir, front_right_pwm,
                  front_right_dir, back_left_pwm, back_left_dir, back_right_pwm,
-                 back_right_dir, max_speed=0.5, reverse_fl=False, 
+                 back_right_dir, max_speed=0.5, reverse_fl=False,
                  reverse_bl=False, reverse_fr=False, reverse_br=False):
         # Motor pins
         self.fl_pwm = PWMOutputDevice(front_left_pwm, initial_value=False)
-        self.fl_dir = PWMOutputDevice(front_left_dir, 
-                                      active_high=reverse_fl, 
-                                      initial_value=False)
+        self.fl_dir = OutputDevice(front_left_dir,
+                                   active_high=reverse_fl,
+                                   initial_value=False)
         self.fr_pwm = PWMOutputDevice(front_right_pwm, initial_value=False)
-        self.fr_dir = PWMOutputDevice(front_right_dir,
-                                      active_high=reverse_fr,
-                                      initial_value=False)
+        self.fr_dir = OutputDevice(front_right_dir,
+                                   active_high=reverse_fr,
+                                   initial_value=False)
         self.bl_pwm = PWMOutputDevice(back_left_pwm, initial_value=False)
-        self.bl_dir = PWMOutputDevice(back_left_dir,
-                                      active_high=reverse_bl,
-                                      initial_value=False)
+        self.bl_dir = OutputDevice(back_left_dir,
+                                   active_high=reverse_bl,
+                                   initial_value=False)
         self.br_pwm = PWMOutputDevice(back_right_pwm, initial_value=False)
-        self.br_dir = PWMOutputDevice(back_right_dir,
-                                      active_high=reverse_br,
-                                      initial_value=False)
+        self.br_dir = OutputDevice(back_right_dir,
+                                   active_high=reverse_br,
+                                   initial_value=False)
 
         # Motor velocity
         self.max_speed = max_speed
@@ -66,3 +66,17 @@ class MotorController:
         else:
             self.fr_dir.off()
             self.br_dir.off()
+
+    def get_telemetry(self):
+        return {
+            'fl_pwm': self.fl_pwm.value,
+            'fl_dir': self.fl_dir.value,
+            'fr_pwm': self.fr_pwm.value,
+            'fr_dir': self.fr_dir.value,
+            'bl_pwm': self.bl_pwm.value,
+            'bl_dir': self.bl_dir.value,
+            'br_pwm': self.br_pwm.value,
+            'br_dir': self.br_dir.value,
+            'vl': self.vl,
+            'vr': self.vr
+        }
