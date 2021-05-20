@@ -1,0 +1,21 @@
+#telemetry {
+    display: flex;
+}
+
+.tel-item {
+    width: 25%;
+    padding: 0.5em;
+}
+
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (max-width: 600px) {
+    #telemetry {
+        flex-direction: column;
+    }
+    
+    .tel-item {
+        width: 90%;
+        padding: 0.5em;
+    }
+}

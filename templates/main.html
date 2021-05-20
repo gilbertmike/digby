@@ -6,18 +6,63 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digby</title>
+    <link rel="stylesheet" href="main.css">
 </head>
 
 <body>
     <h1>Hi, I'm Digby!</h1>
+    <div id="telemetry">
+        <div class="tel-item"><canvas id="wheel-chart"></canvas></div>
+    </div>
 </body>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js"
+    integrity="sha256-uVEHWRIr846/vAdLJeybWxjPNStREzOlqLMXjW/Saeo=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
     integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
     crossorigin="anonymous"></script>
+
 <script type="text/javascript" charset="utf-8">
+    var wheel = document.getElementById('wheel-chart').getContext('2d');
+    var wheelChart = new Chart(wheel, {
+        type: 'bar',
+        data: {
+            labels: ['Front Left', 'Back Left', 'Front Right', 'Back Right'],
+            datasets: [{
+                label: 'Speed',
+                data: [0, 0, 0, 0],
+                backgroundColor: 'rgb(0, 0, 0)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            aspectRatio: 1.5,
+            maintainAspectRatio: true,
+            scales: {
+                y: {
+                    min: -1,
+                    max: 1,
+                }
+            }
+        }
+    });
+
     var socket = io();
     socket.on('connect', function () {
         console.log("Connected");
+    });
+
+    socket.on('telemetry', function (tel) {
+        console.log(tel.fl_pwm, tel.fl_dir, bl_pwm, bl_dir, fr_pwm, fr_dir, br_pwm, br_dir);
+        fl_v = parseFloat(tel.fl_pwm) * (2 * parseFloat(tel.fl_dir) - 1);
+        bl_v = parseFloat(tel.bl_pwm) * (2 * parseFloat(tel.bl_dir) - 1);
+        fr_v = parseFloat(tel.fr_pwm) * (2 * parseFloat(tel.fr_dir) - 1);
+        br_v = parseFloat(tel.br_pwm) * (2 * parseFloat(tel.br_dir) - 1);
+        wheelChart.data.datasets.data[0] = fl_v;
+        wheelChart.data.datasets.data[1] = bl_v;
+        wheelChart.data.datasets.data[2] = fr_v;
+        wheelChart.data.datasets.data[3] = br_v;
+        wheelChart.update();
     });
 
     var log = document.getElementById('log');
