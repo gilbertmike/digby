@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digby</title>
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="static/main.css">
 </head>
 
 <body>
@@ -53,15 +53,15 @@
     });
 
     socket.on('telemetry', function (tel) {
-        console.log(tel.fl_pwm, tel.fl_dir, bl_pwm, bl_dir, fr_pwm, fr_dir, br_pwm, br_dir);
+        console.log(tel);
         fl_v = parseFloat(tel.fl_pwm) * (2 * parseFloat(tel.fl_dir) - 1);
         bl_v = parseFloat(tel.bl_pwm) * (2 * parseFloat(tel.bl_dir) - 1);
         fr_v = parseFloat(tel.fr_pwm) * (2 * parseFloat(tel.fr_dir) - 1);
         br_v = parseFloat(tel.br_pwm) * (2 * parseFloat(tel.br_dir) - 1);
-        wheelChart.data.datasets.data[0] = fl_v;
-        wheelChart.data.datasets.data[1] = bl_v;
-        wheelChart.data.datasets.data[2] = fr_v;
-        wheelChart.data.datasets.data[3] = br_v;
+        wheelChart.data.datasets[0].data[0] = fl_v;
+        wheelChart.data.datasets[0].data[1] = bl_v;
+        wheelChart.data.datasets[0].data[2] = fr_v;
+        wheelChart.data.datasets[0].data[3] = br_v;
         wheelChart.update();
     });
 
