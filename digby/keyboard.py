@@ -3,7 +3,7 @@ import time
 
 class KeyboardHandler:
 
-    def __init__(self, start_val=0.5, wait_time=0.1):
+    def __init__(self, start_val=0.5, wait_time=0.05):
         self.start_val = start_val
         self.wait_time = wait_time
 
