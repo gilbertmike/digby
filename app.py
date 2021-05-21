@@ -29,9 +29,12 @@ def sessions():
 
 @socketio.on('connect')
 def socket_connect():
-    print('Connection')
     motor_tel = motors.get_telemetry()
     emit('telemetry', motor_tel)
+
+@socketio.on('disconnect')
+def socket_disconnect():
+    motors.steer(0, 0)
 
 
 @socketio.on('keyboard_update')
