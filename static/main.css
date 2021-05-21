@@ -1,20 +1,26 @@
-#telemetry {
+#panel {
     display: flex;
 }
 
-.tel-item {
+.panel-item {
     width: 25%;
     padding: 0.5em;
+}
+
+#joystick {
+    border-style: dotted;
+    border-width: 2px;
+    border-color: black;
 }
 
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
 @media only screen and (max-width: 600px) {
-    #telemetry {
+    #panel {
         flex-direction: column;
     }
     
-    .tel-item {
+    .panel-item {
         width: 90%;
         padding: 0.5em;
     }

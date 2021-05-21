@@ -39,10 +39,18 @@ def socket_keypress(json):
     keyboard.update(json)
     v, angle = keyboard.get_velocity()
     motors.steer(angle, v)
-    
+
     motor_tel = motors.get_telemetry()
     emit('telemetry', motor_tel)
 
+@socketio.on('joystick_update')
+def socket_joystick(json):
+    v = float(json['vel'])
+    angle = float(json['angle'])
+    motors.steer(angle, v)
+
+    motor_tel = motors.get_telemetry()
+    emit('telemetry', motor_tel)
 
 if __name__ == '__main__':
     socketio.run(app)

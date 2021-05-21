@@ -11,8 +11,9 @@
 
 <body>
     <h1>Hi, I'm Digby!</h1>
-    <div id="telemetry">
-        <div class="tel-item"><canvas id="wheel-chart"></canvas></div>
+    <div id="panel">
+        <div class="panel-item"><canvas id="wheel-chart"></canvas></div>
+        <div class="panel-item"><canvas id="joystick"></canvas></div>
     </div>
 </body>
 
@@ -67,6 +68,7 @@
 
     var log = document.getElementById('log');
 
+    // Keyboard control
     var map = { 'KeyW': false, 'KeyA': false, 'KeyS': false, 'KeyD': false };
     document.addEventListener('keydown', function (e) {
         if (e.code == 'KeyW' || e.code == 'KeyA' || e.code == 'KeyS' || e.code == 'KeyD') {
@@ -80,6 +82,53 @@
         }
         socket.emit('keyboard_update', map);
     })
+
+    // Touch control
+    var joystickCanvas = document.getElementById("joystick");
+    // Make canvas as large as parent
+    joystickCanvas.style.width = '100%';
+    joystickCanvas.style.height = '100%';
+    joystickCanvas.width = joystickCanvas.offsetWidth;
+    joystickCanvas.height = joystickCanvas.offsetHeight;
+    var joystickCtx = joystickCanvas.getContext("2d");
+    // Draw joystick
+    function drawJoystick(x, y) {
+        joystickCtx.clearRect(0, 0, joystickCanvas.width, joystickCanvas.height);
+        joystickCtx.beginPath();
+        joystickCtx.arc(x, y, 20, 0, 2 * Math.PI);
+        joystickCtx.stroke();
+        joystickCtx.beginPath();
+        joystickCtx.arc(x, y, 18, 0, 2 * Math.PI);
+        joystickCtx.fill();
+        joystickCtx.closePath();
+    }
+    drawJoystick(joystickCanvas.width / 2, joystickCanvas.height / 2);
+    // Capture input
+    function touchHandler(e) {
+        if (e.touches) {
+            x = e.touches[0].pageX - joystickCanvas.offsetLeft;
+            y = e.touches[0].pageY - joystickCanvas.offsetTop;
+            e.preventDefault();
+            drawJoystick(x, y);
+            var max = Math.min(joystickCanvas.width, joystickCanvas.height) / 2;
+            var centered_x = x - joystickCanvas.width / 2;
+            var centered_y = y - joystickCanvas.height / 2;
+            var angle = 0;
+            if (centered_x != 0) {
+                angle = Math.atan2(-centered_x, Math.abs(centered_y)) / Math.PI * 2;
+            }
+            var vel = Math.sqrt(centered_x * centered_x + centered_y * centered_y) / max;
+            vel = -Math.min(vel, 1) * Math.sign(centered_y);
+            socket.emit('joystick_update', { 'vel': vel, 'angle': angle });
+        }
+    }
+    joystickCanvas.addEventListener('touchstart', touchHandler);
+    joystickCanvas.addEventListener('touchmove', touchHandler);
+    joystickCanvas.addEventListener('touchend', (e) => {
+        drawJoystick(joystickCanvas.width / 2, joystickCanvas.height / 2);
+        socket.emit('joystick_update', { 'vel': 0, 'angle': 0 });
+    })
+
 </script>
 
 </html>
